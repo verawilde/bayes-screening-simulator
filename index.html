@@ -1,0 +1,558 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayes Mass Screening Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .control-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .slider-container {
+            margin-top: 10px;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider-marks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 5px;
+            padding: 0 2px;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+        
+        .slider-value {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            padding: 30px;
+        }
+        
+        .results-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .results-content {
+            display: none;
+        }
+        
+        .results-content.show {
+            display: block;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .total-row {
+            background: #e8eaf6 !important;
+            font-weight: 700;
+        }
+        
+        .interpretation {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 6px;
+            line-height: 1.8;
+        }
+        
+        .interpretation h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .interpretation p {
+            color: #856404;
+            margin-bottom: 12px;
+        }
+        
+        .stat-highlight {
+            background: #ffc107;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+        
+        .visual-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        #eulerCanvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bayes Mass Screening Simulator</h1>
+            <p>This application estimates outcomes of mass screenings for low-prevalence problems to help people correct for base rate bias. When something is very rare, even in a highly accurate mass screening, the common (false positives) overwhelms the rare (true positives). When secondary screening cannot sort false from true positives without substantial costs and with high certainty, these programs may cause massive, preventable societal harm.</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="population">Population Size</label>
+                    <input type="number" id="population" value="1000000" min="1000" step="1000">
+                </div>
+                
+                <div class="control-group">
+                    <label for="baseRate">Base Rate (1 in X)</label>
+                    <input type="number" id="baseRate" value="10000" min="10" step="10">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Prevalence: <span id="prevalenceDisplay">0.01%</span>
+                    </small>
+                </div>
+                
+                <div class="control-group">
+                    <label for="accuracy">Test Accuracy (True Positive Rate)
+                        <span class="slider-value" id="accuracyValue">75%</span>
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" id="accuracy" min="50" max="100" value="75" step="1">
+                        <div class="slider-marks">
+                            <span>50%</span>
+                            <span>60%</span>
+                            <span>70%</span>
+                            <span>80%</span>
+                            <span>90%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="threshold">Detection Threshold (False Positive Rate)
+                        <span class="slider-value" id="thresholdValue">50%</span>
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" id="threshold" min="1" max="90" value="50" step="1">
+                        <div class="slider-marks">
+                            <span>1%</span>
+                            <span>20%</span>
+                            <span>40%</span>
+                            <span>60%</span>
+                            <span>80%</span>
+                            <span>90%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="generateResults()">Generate Results</button>
+            </div>
+            
+            <div class="results">
+                <div class="results-placeholder" id="placeholder">
+                    Adjust parameters and click "Generate Results"
+                </div>
+                
+                <div class="results-content" id="resultsContent">
+                    <div class="visual-container">
+                        <canvas id="eulerCanvas" width="600" height="400"></canvas>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Truth</th>
+                                <th>Failed Test (Flagged)</th>
+                                <th>Passed Test (Not Flagged)</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                    
+                    <div class="interpretation">
+                        <h3>📊 Plain Language Interpretation</h3>
+                        <div id="interpretationText"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.9em; border-top: 1px solid #e0e0e0;">
+        Created by Vera Wilde • Built with assistance from Claude (Anthropic AI)
+    </footer>
+    
+    <script>
+        // Update slider displays
+        document.getElementById('accuracy').addEventListener('input', function(e) {
+            document.getElementById('accuracyValue').textContent = e.target.value + '%';
+        });
+        
+        document.getElementById('threshold').addEventListener('input', function(e) {
+            document.getElementById('thresholdValue').textContent = e.target.value + '%';
+        });
+        
+        document.getElementById('baseRate').addEventListener('input', function(e) {
+            const prevalence = (1 / e.target.value * 100).toFixed(4);
+            document.getElementById('prevalenceDisplay').textContent = prevalence + '%';
+        });
+        
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', { maximumFractionDigits: 1 });
+        }
+        
+        function drawEulerDiagram(truePositives, falsePositives, falseNegatives, trueNegatives, population) {
+            const canvas = document.getElementById('eulerCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Calculate proportions
+            const totalFlagged = truePositives + falsePositives;
+            const actualProblems = truePositives + falseNegatives;
+            
+            // Scale circles based on proportions (square root for area)
+            const maxRadius = 140;
+            const flaggedRadius = Math.sqrt(totalFlagged / population) * maxRadius + 30;
+            const problemsRadius = Math.sqrt(actualProblems / population) * maxRadius + 30;
+            
+            // Position circles to show overlap
+            const centerY = height / 2;
+            const flaggedX = width * 0.35;
+            const problemsX = width * 0.65;
+            
+            // Calculate overlap for true positives
+            const overlapX = (flaggedX + problemsX) / 2;
+            
+            // Draw "Flagged by Test" circle (false positives + true positives)
+            ctx.globalAlpha = 0.4;
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(flaggedX, centerY, flaggedRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw "Actual Problems" circle (true positives + false negatives)
+            ctx.fillStyle = '#4ecdc4';
+            ctx.beginPath();
+            ctx.arc(problemsX, centerY, problemsRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Reset alpha for text
+            ctx.globalAlpha = 1;
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            
+            // Label: Flagged by Test
+            ctx.fillStyle = '#c92a2a';
+            ctx.fillText('Flagged by Test', flaggedX, centerY - flaggedRadius - 15);
+            ctx.font = '12px sans-serif';
+            ctx.fillText(`${formatNumber(totalFlagged)} people`, flaggedX, centerY - flaggedRadius + 2);
+            
+            // Label: Actual Problems
+            ctx.fillStyle = '#0c8599';
+            ctx.fillText('Actual Problems', problemsX, centerY - problemsRadius - 15);
+            ctx.font = '12px sans-serif';
+            ctx.fillText(`${formatNumber(actualProblems)} people`, problemsX, centerY - problemsRadius + 2);
+            
+            // Label sections with counts
+            ctx.font = 'bold 16px sans-serif';
+            
+            // False Positives (left only)
+            ctx.fillStyle = '#c92a2a';
+            ctx.fillText('False Positives', flaggedX - 50, centerY - 10);
+            ctx.font = '14px sans-serif';
+            ctx.fillText(formatNumber(falsePositives), flaggedX - 50, centerY + 10);
+            
+            // True Positives (overlap)
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillStyle = '#2d6a4f';
+            ctx.fillText('True Positives', overlapX, centerY - 10);
+            ctx.font = '14px sans-serif';
+            ctx.fillText(formatNumber(truePositives), overlapX, centerY + 10);
+            
+            // False Negatives (right only)
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillStyle = '#0c8599';
+            ctx.fillText('False Negatives', problemsX + 50, centerY - 10);
+            ctx.font = '14px sans-serif';
+            ctx.fillText(formatNumber(falseNegatives), problemsX + 50, centerY + 10);
+            
+            // Add legend at bottom
+            ctx.textAlign = 'left';
+            ctx.font = '11px sans-serif';
+            ctx.fillStyle = '#666';
+            const legendY = height - 15;
+            ctx.fillText(`Population: ${formatNumber(population)} | True Negatives (not shown): ${formatNumber(trueNegatives)}`, 20, legendY);
+        }
+        
+        function generateResults() {
+            // Get inputs
+            const population = parseInt(document.getElementById('population').value);
+            const baseRateDenominator = parseInt(document.getElementById('baseRate').value);
+            const accuracy = parseFloat(document.getElementById('accuracy').value) / 100;
+            const falsePositiveRate = parseFloat(document.getElementById('threshold').value) / 100;
+            
+            // Calculate base rate (prevalence)
+            const baseRate = 1 / baseRateDenominator;
+            
+            // Calculate actual numbers in population
+            const actualPositives = population * baseRate;
+            const actualNegatives = population - actualPositives;
+            
+            // Apply test accuracy
+            const truePositives = actualPositives * accuracy; // Correctly identified problems
+            const falseNegatives = actualPositives - truePositives; // Missed problems
+            
+            const falsePositives = actualNegatives * falsePositiveRate; // Incorrectly flagged innocents
+            const trueNegatives = actualNegatives - falsePositives; // Correctly cleared innocents
+            
+            // Total flagged and not flagged
+            const totalFlagged = truePositives + falsePositives;
+            const totalNotFlagged = falseNegatives + trueNegatives;
+            
+            // Probabilities for interpretation
+            const probFlaggedIsInnocent = (falsePositives / totalFlagged) * 100;
+            const probBenignFlagged = (falsePositives / population) * 100;
+            const probProblemMissed = (falseNegatives / actualPositives) * 100;
+            const falsePositivesPerTruePositive = falsePositives / truePositives;
+            
+            // Build table
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td>Signal Present (Problem Exists)</td>
+                    <td>${formatNumber(truePositives)}</td>
+                    <td>${formatNumber(falseNegatives)}</td>
+                    <td>${formatNumber(actualPositives)}</td>
+                </tr>
+                <tr>
+                    <td>No Signal (No Problem)</td>
+                    <td>${formatNumber(falsePositives)}</td>
+                    <td>${formatNumber(trueNegatives)}</td>
+                    <td>${formatNumber(actualNegatives)}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total</td>
+                    <td>${formatNumber(totalFlagged)}</td>
+                    <td>${formatNumber(totalNotFlagged)}</td>
+                    <td>${formatNumber(population)}</td>
+                </tr>
+            `;
+            
+            // Build interpretation
+            const interpretationText = document.getElementById('interpretationText');
+            interpretationText.innerHTML = `
+                <p>Assuming a base rate of <span class="stat-highlight">1 in ${formatNumber(baseRateDenominator)}</span> (${(baseRate * 100).toFixed(4)}% prevalence), 
+                a <span class="stat-highlight">${(falsePositiveRate * 100).toFixed(0)}%</span> false positive rate, 
+                and a <span class="stat-highlight">${(accuracy * 100).toFixed(0)}%</span> true positive rate, 
+                screening <span class="stat-highlight">${formatNumber(population)}</span> people would generate:</p>
+                
+                <p><strong>${formatNumber(falsePositives)}</strong> false positives (innocent cases flagged)</p>
+                
+                <p>There's a <span class="stat-highlight">${probFlaggedIsInnocent.toFixed(2)}%</span> probability 
+                that a case flagged as concerning would actually be innocent.</p>
+                
+                <p>There's a <span class="stat-highlight">${probBenignFlagged.toFixed(2)}%</span> chance 
+                that a benign case would get flagged.</p>
+                
+                <p>Yet <span class="stat-highlight">${probProblemMissed.toFixed(1)}%</span> of the time, 
+                real problems would evade detection (false negatives).</p>
+                
+                <p>Meanwhile, there would be approximately <span class="stat-highlight">${formatNumber(falsePositivesPerTruePositive)}</span> 
+                people mistakenly flagged for each real problem found.</p>
+            `;
+            
+            // Show results
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('resultsContent').classList.add('show');
+            
+            // Draw Euler diagram
+            drawEulerDiagram(truePositives, falsePositives, falseNegatives, trueNegatives, population);
+        }
+    </script>
+</body>
+</html>
