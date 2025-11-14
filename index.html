@@ -1,9 +1,9 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayes Mass Screening Simulator</title>
+    <title>Rarity Roulette</title>
     <style>
         * {
             margin: 0;
@@ -221,6 +221,9 @@ DOCTYPE html>
             padding: 20px;
             border-radius: 6px;
             line-height: 1.8;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
         .interpretation h3 {
@@ -239,6 +242,8 @@ DOCTYPE html>
             padding: 2px 6px;
             border-radius: 3px;
             font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
         }
         
         .visual-container {
@@ -271,8 +276,8 @@ DOCTYPE html>
 <body>
     <div class="container">
         <header>
-            <h1>Bayes Mass Screening Simulator</h1>
-            <p>This application estimates outcomes of mass screenings for low-prevalence problems to help people correct for base rate bias. When something is very rare, even in a highly accurate mass screening, the common (false positives) overwhelms the rare (true positives). When secondary screening cannot sort false from true positives without substantial costs and with high certainty, these programs may cause massive, preventable societal harm.</p>
+            <h1>Rarity Roulette</h1>
+            <p>This simulator estimates outcomes of mass screenings for low-prevalence problems to help people correct for base rate bias. When something is very rare, even in a highly accurate mass screening, the common (false positives) overwhelms the rare (true positives). When secondary screening cannot sort false from true positives without substantial costs and with high certainty, these programs may cause massive, preventable societal harm.</p>
         </header>
         
         <div class="main-content">
