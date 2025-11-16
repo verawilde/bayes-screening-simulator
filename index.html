@@ -389,8 +389,8 @@
                         <span class="tooltip">This represents the true occurrence rate (population-level incidence) of the condition/problem being screened. For rare problems, this might be 1 in 10,000 or less.</span>
                     </label>
                     <div class="frequency-input">
-                        <span>1 in</span>
-                        <input type="number" id="baseRateFreq" value="10000" min="10" step="10">
+                        <input type="number" id="baseRateFreq" value="10000" min="10" step="10" style="width: 100px;">
+                        <span style="margin-left: -92px; margin-right: 5px;">1 in</span>
                     </div>
                     <small style="color: #666; display: block; margin-top: 5px;">
                         Prevalence: <span id="prevalenceDisplay">0.01%</span>
@@ -470,8 +470,8 @@
                     
                     <div class="info-section">
                         <h3>How This Works</h3>
-                        <p>This tool corrects for <strong>base rate neglect</strong> (also called base rate bias or the base rate fallacy) - a common cognitive bias where people ignore how the prevalence of a problem affects test outcomes.</p>
-                        <p>The simulator applies <strong>Bayes' theorem</strong> to show you four outcome categories instead of just one accuracy number. It displays results in <strong>frequency format</strong> (actual counts of people) rather than percentages, which helps our intuitions work better when reasoning about probabilities.</p>
+                        <p>This tool corrects for <strong><a href="https://en.wikipedia.org/wiki/Base_rate_fallacy" target="_blank">base rate neglect</a></strong> (also called base rate bias or the base rate fallacy) - a common cognitive bias where people ignore how the prevalence of a problem affects test outcomes.</p>
+                        <p>The simulator applies <strong><a href="https://en.wikipedia.org/wiki/Bayes%27_theorem" target="_blank">Bayes' theorem</a></strong> to show you four outcome categories instead of just one accuracy number. It displays results in <strong><a href="https://www.researchgate.net/publication/44213832_How_to_Improve_Bayesian_Reasoning_Without_Instruction_Frequency_Formats" target="_blank">frequency format</a></strong> (actual counts of people) rather than percentages, which helps our intuitions work better when reasoning about probabilities.</p>
                         <p>Even highly accurate tests can produce more false positives than true positives when screening for rare conditions. This has profound implications for mass screening programs in health, security, and education.</p>
                     </div>
                     
