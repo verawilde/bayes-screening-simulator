@@ -447,7 +447,7 @@
                 
                 <div class="results-content" id="resultsContent">
                     <div class="visual-container">
-                        <canvas id="eulerCanvas" width="600" height="400"></canvas>
+                        <canvas id="eulerCanvas" width="700" height="450"></canvas>
                     </div>
                     
                     <table>
@@ -527,13 +527,13 @@
             const actualInnocents = falsePositives + trueNegatives;
             
             // Scale circles based on actual proportions
-            const maxRadius = 120;
-            const baddiesRadius = Math.max(Math.sqrt(actualProblems / population) * maxRadius * 3, 35);
-            const innocentsRadius = Math.sqrt(actualInnocents / population) * maxRadius * 1.5 + 40;
+            const maxRadius = 100;
+            const baddiesRadius = Math.max(Math.sqrt(actualProblems / population) * maxRadius * 3, 40);
+            const innocentsRadius = Math.sqrt(actualInnocents / population) * maxRadius * 1.5 + 45;
             
             const centerY = height / 2;
-            const baddiesX = width * 0.3;
-            const innocentsX = width * 0.7;
+            const baddiesX = width * 0.28;
+            const innocentsX = width * 0.72;
             
             // Helper function to draw stipple pattern
             function drawStipple(x, y, radius, density, failProportion) {
