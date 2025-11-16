@@ -523,67 +523,95 @@
             
             ctx.clearRect(0, 0, width, height);
             
-            const totalFlagged = truePositives + falsePositives;
             const actualProblems = truePositives + falseNegatives;
+            const actualInnocents = falsePositives + trueNegatives;
             
-            const maxRadius = 140;
-            const flaggedRadius = Math.sqrt(totalFlagged / population) * maxRadius + 30;
-            const problemsRadius = Math.sqrt(actualProblems / population) * maxRadius + 30;
+            // Scale circles based on actual proportions
+            const maxRadius = 120;
+            const baddiesRadius = Math.max(Math.sqrt(actualProblems / population) * maxRadius * 3, 35);
+            const innocentsRadius = Math.sqrt(actualInnocents / population) * maxRadius * 1.5 + 40;
             
             const centerY = height / 2;
-            const flaggedX = width * 0.35;
-            const problemsX = width * 0.65;
-            const overlapX = (flaggedX + problemsX) / 2;
+            const baddiesX = width * 0.3;
+            const innocentsX = width * 0.7;
             
-            ctx.globalAlpha = 0.4;
-            ctx.fillStyle = '#ff6b6b';
+            // Helper function to draw stipple pattern
+            function drawStipple(x, y, radius, density, failProportion) {
+                const failHeight = radius * 2 * failProportion;
+                const numDots = Math.floor(radius * radius * density);
+                
+                for (let i = 0; i < numDots; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const r = Math.sqrt(Math.random()) * radius;
+                    const dotX = x + r * Math.cos(angle);
+                    const dotY = y + r * Math.sin(angle);
+                    
+                    // Check if within circle
+                    const dist = Math.sqrt((dotX - x) ** 2 + (dotY - y) ** 2);
+                    if (dist <= radius) {
+                        // Determine if this dot is in "Fail" zone (top portion)
+                        const isInFailZone = (dotY - y) < (-radius + failHeight);
+                        ctx.fillStyle = isInFailZone ? '#d32f2f' : '#333';
+                        ctx.beginPath();
+                        ctx.arc(dotX, dotY, 2, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            // Draw Baddies circle (left, smaller, red outline)
+            ctx.strokeStyle = '#d32f2f';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.arc(flaggedX, centerY, flaggedRadius, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.arc(baddiesX, centerY, baddiesRadius, 0, 2 * Math.PI);
+            ctx.stroke();
             
-            ctx.fillStyle = '#4ecdc4';
+            // Draw Innocents circle (right, larger, blue outline)
+            ctx.strokeStyle = '#1976d2';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.arc(problemsX, centerY, problemsRadius, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.arc(innocentsX, centerY, innocentsRadius, 0, 2 * Math.PI);
+            ctx.stroke();
             
-            ctx.globalAlpha = 1;
-            ctx.font = 'bold 14px sans-serif';
+            // Calculate fail proportions
+            const baddiesFailProp = actualProblems > 0 ? truePositives / actualProblems : 0;
+            const innocentsFailProp = actualInnocents > 0 ? falsePositives / actualInnocents : 0;
+            
+            // Draw stipple patterns
+            drawStipple(baddiesX, centerY, baddiesRadius - 5, 0.015, baddiesFailProp);
+            drawStipple(innocentsX, centerY, innocentsRadius - 5, 0.008, innocentsFailProp);
+            
+            // Labels
             ctx.textAlign = 'center';
+            ctx.font = 'bold 18px sans-serif';
             
-            ctx.fillStyle = '#c92a2a';
-            ctx.fillText('Flagged by Test', flaggedX, centerY - flaggedRadius - 15);
-            ctx.font = '12px sans-serif';
-            ctx.fillText(`${formatNumber(totalFlagged)} people`, flaggedX, centerY - flaggedRadius + 2);
+            // "Fail" labels above circles
+            ctx.fillStyle = '#000';
+            ctx.fillText('Fail', baddiesX, centerY - baddiesRadius - 35);
+            ctx.fillText('Fail', innocentsX, centerY - innocentsRadius - 35);
             
-            ctx.fillStyle = '#0c8599';
-            ctx.fillText('Actual Problems', problemsX, centerY - problemsRadius - 15);
-            ctx.font = '12px sans-serif';
-            ctx.fillText(`${formatNumber(actualProblems)} people`, problemsX, centerY - problemsRadius + 2);
-            
+            // Circle labels
             ctx.font = 'bold 16px sans-serif';
+            ctx.fillStyle = '#d32f2f';
+            ctx.fillText('Signal', baddiesX, centerY - baddiesRadius - 15);
             
-            ctx.fillStyle = '#c92a2a';
-            ctx.fillText('False Positives', flaggedX - 50, centerY - 10);
-            ctx.font = '14px sans-serif';
-            ctx.fillText(formatNumber(falsePositives), flaggedX - 50, centerY + 10);
+            ctx.fillStyle = '#1976d2';
+            ctx.fillText('No Signal', innocentsX, centerY - innocentsRadius - 15);
             
-            ctx.font = 'bold 16px sans-serif';
-            ctx.fillStyle = '#2d6a4f';
-            ctx.fillText('True Positives', overlapX, centerY - 10);
-            ctx.font = '14px sans-serif';
-            ctx.fillText(formatNumber(truePositives), overlapX, centerY + 10);
+            // Count labels below circles
+            ctx.font = '13px sans-serif';
+            ctx.fillStyle = '#666';
+            ctx.fillText(formatNumber(actualProblems) + ' total', baddiesX, centerY + baddiesRadius + 20);
+            ctx.fillText(formatNumber(truePositives) + ' fail test', baddiesX, centerY + baddiesRadius + 38);
             
-            ctx.font = 'bold 16px sans-serif';
-            ctx.fillStyle = '#0c8599';
-            ctx.fillText('False Negatives', problemsX + 50, centerY - 10);
-            ctx.font = '14px sans-serif';
-            ctx.fillText(formatNumber(falseNegatives), problemsX + 50, centerY + 10);
+            ctx.fillText(formatNumber(actualInnocents) + ' total', innocentsX, centerY + innocentsRadius + 20);
+            ctx.fillText(formatNumber(falsePositives) + ' fail test', innocentsX, centerY + innocentsRadius + 38);
             
+            // Bottom note
             ctx.textAlign = 'left';
             ctx.font = '11px sans-serif';
             ctx.fillStyle = '#666';
-            const legendY = height - 15;
-            ctx.fillText(`Population: ${formatNumber(population)} | True Negatives (not shown): ${formatNumber(trueNegatives)}`, 20, legendY);
+            ctx.fillText(`The shocking reality: ${formatNumber(falsePositives)} innocents fail for every ${formatNumber(truePositives)} baddies caught`, 20, height - 15);
         }
         
         function generateResults() {
