@@ -1,6 +1,6 @@
 # Rarity Roulette
 
-Materials, data, and analysis code for The PPV Canary in the Online Data Coalmine: Bayesian Reasoning Problems as a Capability-Gap Test for LLM Contamination in Online Samples (Wilde), and for Rarity Roulette, an interactive tool for teaching Bayesian reasoning about low-prevalence screening (e.g., polygraphs, mammography).
+Materials, data, and analysis code for An LLM Canary in the Online Data Coalmine: Bayesian Reasoning Problems as a Capability-Gap Test for LLM Contamination in Online Samples (Wilde), and for Rarity Roulette, an interactive tool for teaching Bayesian reasoning about low-prevalence screening (e.g., polygraphs, mammography).
 
 Preregistrations and OSF project: https://osf.io/exaqj
 
@@ -21,6 +21,6 @@ Preregistrations and OSF project: https://osf.io/exaqj
 Reported estimates use the preregistered quality-filtered subsample (in_quality_sample = TRUE) as primary, with the full sample reported for transparency. Accuracy = mean correct-answer rate across the five PPV problems; Bayesian algorithm use = coded from "show your work" responses.
 
 ## Citation
-Wilde, V. (2026). The PPV Canary in the Online Data Coalmine: Bayesian Reasoning Problems as a Capability-Gap Test for LLM Contamination in Online Samples. Revised manuscript under review, Behavior Research Methods.
+Wilde, V. (2026). An LLM Canary in the Online Data Coalmine: Bayesian Reasoning Problems as a Capability-Gap Test for LLM Contamination in Online Samples. Revised manuscript under review, Behavior Research Methods.
 
 License: see LICENSE (MIT).
